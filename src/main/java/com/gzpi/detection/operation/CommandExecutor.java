@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class CommandExecutor implements Runnable {
     Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
@@ -13,6 +14,7 @@ public class CommandExecutor implements Runnable {
     private String outputDir;
     private boolean hasFinished = false;
     private int resultCode = 0;
+    public List<String> usingFiles;
 
     public CommandExecutor(String cmd, String outputDir) {
         this.cmd = cmd;

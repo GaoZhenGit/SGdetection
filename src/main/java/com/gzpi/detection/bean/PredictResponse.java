@@ -8,5 +8,7 @@ public class PredictResponse extends BaseResponse{
     public static class PredictItem {
         public String id;
         public String status;
+
+        public int resultCode;
     }
 }

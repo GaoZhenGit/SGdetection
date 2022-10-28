@@ -13,9 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -54,6 +52,10 @@ public class PredictController {
                 .replace("$img2", pathSelector.getDockerBasePath(predictRequest.img2))
                 .replace("$output", dockerOutputPath);
         e = new CommandExecutor(cmd, realOutPath);
+        e.usingFiles = Arrays.asList(predictRequest.img1,predictRequest.img2);
+        if (isFilesUsing(predictRequest.img1, predictRequest.img2)) {
+            return BaseResponse.fail("selecting files is using by other task");
+        }
         mTaskList.put(predictRequest.id, e);
         mThreadPool.execute(e);
         logger.info("start predict:" + predictRequest.id);
@@ -73,11 +75,22 @@ public class PredictController {
                 item.status = "none";
             } else if (value.hasFinished()) {
                 item.status = "finished";
+                item.resultCode = value.getResultCode();
             } else {
                 item.status = "loading";
             }
             response.list.add(item);
         }
         return response;
+    }
+
+    private boolean isFilesUsing(String img1, String img2) {
+        List<String> usingFiles = new ArrayList<>();
+        for (CommandExecutor executor : mTaskList.values()) {
+            if (!executor.hasFinished()) {
+                usingFiles.addAll(executor.usingFiles);
+            }
+        }
+        return usingFiles.contains(img1) || usingFiles.contains(img2);
     }
 }
