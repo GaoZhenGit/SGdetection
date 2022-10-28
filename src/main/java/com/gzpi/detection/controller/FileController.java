@@ -6,6 +6,11 @@ import com.gzpi.detection.operation.PathSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,9 +25,10 @@ public class FileController {
     Logger logger = LoggerFactory.getLogger(FileController.class);
     @Autowired
     private PathSelector pathSelector;
+    private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 
-    @RequestMapping(value = "uploadImg",method = RequestMethod.POST)
+    @RequestMapping(value = "uploadImg", method = RequestMethod.POST)
     @ResponseBody
     public BaseResponse uploadImg(@RequestParam("file") MultipartFile file, @RequestParam("name") String name) {
         if (name == null) {
@@ -56,6 +62,50 @@ public class FileController {
         response.msg = pathSelector.getRealDir();
         return response;
     }
+
+    @RequestMapping(value = "image", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> image(String fileName) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment;filename=" + fileName);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resourceLoader.getResource("file:" + pathSelector.getRealDir() + fileName));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "resultImg/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> resultImg(@PathVariable(name = "id") String taskId) {
+        try {
+            String name = "labels.tif";
+            String path = pathSelector.getRealPath("resultset") + File.separator + taskId + File.separator + "result" + File.separator + name;
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment;filename=" + name);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resourceLoader.getResource("file:" + path));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "result/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> result(@PathVariable(name = "id") String taskId) {
+        try {
+            String name = "0-polygons.json";
+            String path = pathSelector.getRealPath("resultset") + File.separator + taskId + File.separator + "result" + File.separator + name;
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment;filename=" + name);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resourceLoader.getResource("file:" + path));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     public static boolean upload(MultipartFile file, String path, String fileName) {
 

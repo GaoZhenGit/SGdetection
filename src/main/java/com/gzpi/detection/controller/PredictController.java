@@ -2,6 +2,7 @@ package com.gzpi.detection.controller;
 
 import com.gzpi.detection.bean.BaseResponse;
 import com.gzpi.detection.bean.PredictRequest;
+import com.gzpi.detection.bean.PredictResponse;
 import com.gzpi.detection.operation.CommandExecutor;
 import com.gzpi.detection.operation.PathSelector;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ public class PredictController {
         String realOutPath = pathSelector.getRealPath("resultset") + "/" + predictRequest.id + "/";
         CommandExecutor e = mTaskList.get(predictRequest.id);
         if (e != null && !e.hasFinished()) {
-            return BaseResponse.fail(predictRequest.id+" task has executed!");
+            return BaseResponse.fail(predictRequest.id + " task has executed!");
         }
         String cmd = command
                 .replace("$model", pathSelector.getDockerBasePath("bundle/model-bundle.zip"))
@@ -59,9 +60,23 @@ public class PredictController {
         return BaseResponse.success();
     }
 
-//    @RequestMapping(value = "queryTask", method = RequestMethod.GET)
-//    @ResponseBody
-//    public BaseResponse queryTask(@RequestBody PredictRequest predictRequest) {
-//
-//    }
+    @RequestMapping(value = "queryTask/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public PredictResponse queryTask(@PathVariable(name = "id") String taskId) {
+        PredictResponse response = new PredictResponse();
+        response.code = 0;
+        response.id = taskId;
+        CommandExecutor e = mTaskList.get(taskId);
+        if (e == null) {
+            response.status = "none";
+            return response;
+        }
+        if (e.hasFinished()) {
+            response.status = "finished";
+            return response;
+        } else {
+            response.status = "loading";
+            return response;
+        }
+    }
 }
