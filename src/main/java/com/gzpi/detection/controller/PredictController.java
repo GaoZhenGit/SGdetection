@@ -60,23 +60,24 @@ public class PredictController {
         return BaseResponse.success();
     }
 
-    @RequestMapping(value = "queryTask/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "tasks", method = RequestMethod.GET)
     @ResponseBody
-    public PredictResponse queryTask(@PathVariable(name = "id") String taskId) {
+    public PredictResponse queryTask() {
         PredictResponse response = new PredictResponse();
-        response.code = 0;
-        response.id = taskId;
-        CommandExecutor e = mTaskList.get(taskId);
-        if (e == null) {
-            response.status = "none";
-            return response;
+        for (Map.Entry<String, CommandExecutor> em: mTaskList.entrySet()) {
+            String id = em.getKey();
+            CommandExecutor value = em.getValue();
+            PredictResponse.PredictItem item = new PredictResponse.PredictItem();
+            item.id = id;
+            if (value == null) {
+                item.status = "none";
+            } else if (value.hasFinished()) {
+                item.status = "finished";
+            } else {
+                item.status = "loading";
+            }
+            response.list.add(item);
         }
-        if (e.hasFinished()) {
-            response.status = "finished";
-            return response;
-        } else {
-            response.status = "loading";
-            return response;
-        }
+        return response;
     }
 }

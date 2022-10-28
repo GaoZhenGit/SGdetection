@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PredictResponse extends BaseResponse{
-    public String id;
-    public String status;
+    public List<PredictItem> list = new ArrayList<>();
+    public static class PredictItem {
+        public String id;
+        public String status;
+    }
 }
