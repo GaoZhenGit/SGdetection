@@ -12,11 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Controller
@@ -30,10 +28,44 @@ public class PredictController {
     private Executor mThreadPool = Executors.newCachedThreadPool();
     private Map<String, CommandExecutor> mTaskList = new ConcurrentHashMap<>();
 
-    @Value("${predict.command}")
-    private String command;
+    @Value("${change.predict.command}")
+    private String changePredictCommand;
+    @Value("${building.predict.command}")
+    private String buildingPredictCommand;
 
-    @RequestMapping(value = "predict", method = RequestMethod.POST)
+    private String changeBundleName = "bundle/change-model-bundle.zip";
+    private String buildingBundleName = "bundle/building-model-bundle.zip";
+
+    @RequestMapping(value = "change/predict", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse changePredict(@RequestBody PredictRequest predictRequest) {
+        List<String> files = fileController.listFiles().files;
+        if (!files.contains(predictRequest.img1) || !files.contains(predictRequest.img2)) {
+            return BaseResponse.fail("server has not these images");
+        }
+        String dockerOutputPath = pathSelector.getDockerBasePath("resultset") + "/" + predictRequest.id + "/";
+        String realOutPath = pathSelector.getRealPath("resultset") + "/" + predictRequest.id + "/";
+        CommandExecutor e = mTaskList.get(predictRequest.id);
+        if (e != null && !e.hasFinished()) {
+            return BaseResponse.fail(predictRequest.id + " task has executed!");
+        }
+        String cmd = changePredictCommand
+                .replace("$model", pathSelector.getDockerBasePath(changeBundleName))
+                .replace("$img1", pathSelector.getDockerBasePath(predictRequest.img1))
+                .replace("$img2", pathSelector.getDockerBasePath(predictRequest.img2))
+                .replace("$output", dockerOutputPath);
+        e = new CommandExecutor(cmd, realOutPath);
+        e.usingFiles = Arrays.asList(predictRequest.img1,predictRequest.img2);
+        if (isFilesUsing(predictRequest.img1, predictRequest.img2)) {
+            return BaseResponse.fail("selecting files is using by other task");
+        }
+        mTaskList.put(predictRequest.id, e);
+        mThreadPool.execute(e);
+        logger.info("start predict:" + predictRequest.id);
+        return BaseResponse.success();
+    }
+
+    @RequestMapping(value = "building/predict", method = RequestMethod.POST)
     @ResponseBody
     public BaseResponse predict(@RequestBody PredictRequest predictRequest) {
         List<String> files = fileController.listFiles().files;
@@ -46,14 +78,13 @@ public class PredictController {
         if (e != null && !e.hasFinished()) {
             return BaseResponse.fail(predictRequest.id + " task has executed!");
         }
-        String cmd = command
-                .replace("$model", pathSelector.getDockerBasePath("bundle/model-bundle.zip"))
+        String cmd = buildingPredictCommand
+                .replace("$model", pathSelector.getDockerBasePath(buildingBundleName))
                 .replace("$img1", pathSelector.getDockerBasePath(predictRequest.img1))
-                .replace("$img2", pathSelector.getDockerBasePath(predictRequest.img2))
                 .replace("$output", dockerOutputPath);
         e = new CommandExecutor(cmd, realOutPath);
-        e.usingFiles = Arrays.asList(predictRequest.img1,predictRequest.img2);
-        if (isFilesUsing(predictRequest.img1, predictRequest.img2)) {
+        e.usingFiles = Arrays.asList(predictRequest.img1);
+        if (isFilesUsing(predictRequest.img1)) {
             return BaseResponse.fail("selecting files is using by other task");
         }
         mTaskList.put(predictRequest.id, e);
@@ -92,5 +123,15 @@ public class PredictController {
             }
         }
         return usingFiles.contains(img1) || usingFiles.contains(img2);
+    }
+
+    private boolean isFilesUsing(String img) {
+        List<String> usingFiles = new ArrayList<>();
+        for (CommandExecutor executor : mTaskList.values()) {
+            if (!executor.hasFinished()) {
+                usingFiles.addAll(executor.usingFiles);
+            }
+        }
+        return usingFiles.contains(img);
     }
 }
