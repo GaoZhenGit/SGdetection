@@ -22,7 +22,7 @@ public class PathSelector {
     }
 
     public String getRealPath(String fileName) {
-        return getRealDir() + File.separator + fileName;
+        return getRealDir() + fileName;
     }
 
     public String getRealDir() {
