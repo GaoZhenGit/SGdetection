@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.gzpi</groupId>
-	<artifactId>detection</artifactId>
+	<artifactId>SGdetection</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>detection</name>
+	<name>SGdetection</name>
 	<description>detection of remote senscing</description>
 	<properties>
 		<java.version>1.8</java.version>

@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @Controller
+@CrossOrigin
+@RequestMapping("/file/")
 public class FileController {
     Logger logger = LoggerFactory.getLogger(FileController.class);
     @Autowired
@@ -35,7 +38,15 @@ public class FileController {
             name = file.getOriginalFilename();
         }
         logger.info("uploading file:" + name);
-        boolean ret = upload(file, pathSelector.getRealDir(), name);
+        boolean ret = upload(file, pathSelector.getUploadImageDir(), name);
+        try {
+            //TODO akil 这里需要转cog再复制
+            File src = new File(pathSelector.getUploadImageDir(), name);
+            File des = new File(pathSelector.getCogImageDir(), name);
+            FileSystemUtils.copyRecursively(src, des);
+        } catch (Exception e) {
+            logger.error("file process fail", e);
+        }
         if (ret) {
             return BaseResponse.success();
         } else {
@@ -43,18 +54,31 @@ public class FileController {
         }
     }
 
-    @RequestMapping(value = "imgs", method = RequestMethod.GET)
+    @RequestMapping(value = "images", method = RequestMethod.GET)
     @ResponseBody
+    public FileListResponse images() {
+        FileListResponse response = new FileListResponse();
+        File workspace = new File(pathSelector.getCogImageDir());
+        String[] files = workspace.list((dir, name) -> {
+            File f = new File(dir + File.separator + name);
+            boolean isTif = name.endsWith(".tif") || name.endsWith(".tiff");
+            boolean isGeojson = name.endsWith(".geojson");
+            return !f.isDirectory() && (isTif || isGeojson);
+        });
+        if (files != null) {
+            response.files = Arrays.asList(files);
+        }
+        response.msg = pathSelector.getRealDir();
+        return response;
+    }
     public FileListResponse listFiles() {
         FileListResponse response = new FileListResponse();
-        File dir = new File(pathSelector.getRealDir());
-        String[] files = dir.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                File f = new File(dir + File.separator + name);
-                boolean isTif = name.endsWith(".tif") || name.endsWith(".tiff");
-                return !f.isDirectory() && isTif;
-            }
+        File workspace = new File(pathSelector.getUploadImageDir());
+        String[] files = workspace.list((dir, name) -> {
+            File f = new File(dir + File.separator + name);
+            boolean isTif = name.endsWith(".tif") || name.endsWith(".tiff");
+            boolean isGeojson = name.endsWith(".geojson");
+            return !f.isDirectory() && (isTif || isGeojson);
         });
         if (files != null) {
             response.files = Arrays.asList(files);
@@ -63,7 +87,7 @@ public class FileController {
         return response;
     }
 
-    @RequestMapping(value = "image", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping(value = "image", produces = MediaType.MULTIPART_FORM_DATA_VALUE, method = RequestMethod.GET)
     public ResponseEntity<?> image(String fileName) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -76,7 +100,7 @@ public class FileController {
         }
     }
 
-    @RequestMapping(value = "resultImg/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping(value = "result/image/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> resultImg(@PathVariable(name = "id") String taskId) {
         try {
             String name = "labels.tif";
@@ -91,7 +115,7 @@ public class FileController {
         }
     }
 
-    @RequestMapping(value = "result/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping(value = "result/vector/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> result(@PathVariable(name = "id") String taskId) {
         try {
             String name = "0-polygons.json";

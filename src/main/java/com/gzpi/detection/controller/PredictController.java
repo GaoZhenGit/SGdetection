@@ -18,6 +18,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @Controller
+@CrossOrigin
+@RequestMapping("/model/")
 public class PredictController {
     Logger logger = LoggerFactory.getLogger(PredictController.class);
     @Autowired
@@ -25,16 +27,16 @@ public class PredictController {
     @Autowired
     private FileController fileController;
 
-    private Executor mThreadPool = Executors.newCachedThreadPool();
-    private Map<String, CommandExecutor> mTaskList = new ConcurrentHashMap<>();
+    private final Executor mThreadPool = Executors.newCachedThreadPool();
+    private final Map<String, CommandExecutor> mTaskList = new ConcurrentHashMap<>();
 
     @Value("${change.predict.command}")
     private String changePredictCommand;
     @Value("${building.predict.command}")
     private String buildingPredictCommand;
 
-    private String changeBundleName = "bundle/change-model-bundle.zip";
-    private String buildingBundleName = "bundle/building-model-bundle.zip";
+    private String changeBundleName = "change-model-bundle.zip";
+    private String buildingBundleName = "building-model-bundle.zip";
 
     @RequestMapping(value = "change/predict", method = RequestMethod.POST)
     @ResponseBody
@@ -43,18 +45,16 @@ public class PredictController {
         if (!files.contains(predictRequest.img1) || !files.contains(predictRequest.img2)) {
             return BaseResponse.fail("server has not these images");
         }
-        String dockerOutputPath = pathSelector.getDockerBasePath("resultset") + "/" + predictRequest.id + "/";
-        String realOutPath = pathSelector.getRealPath("resultset") + "/" + predictRequest.id + "/";
         CommandExecutor e = mTaskList.get(predictRequest.id);
         if (e != null && !e.hasFinished()) {
             return BaseResponse.fail(predictRequest.id + " task has executed!");
         }
         String cmd = changePredictCommand
-                .replace("$model", pathSelector.getDockerBasePath(changeBundleName))
-                .replace("$img1", pathSelector.getDockerBasePath(predictRequest.img1))
-                .replace("$img2", pathSelector.getDockerBasePath(predictRequest.img2))
-                .replace("$output", dockerOutputPath);
-        e = new CommandExecutor(cmd, realOutPath);
+                .replace("$model", pathSelector.getModelBundleDir() + changeBundleName)
+                .replace("$img1", pathSelector.getPredictImagePath(predictRequest.img1))
+                .replace("$img2", pathSelector.getPredictImagePath(predictRequest.img2))
+                .replace("$output", pathSelector.getPredictTaskOutputPath(predictRequest.id));
+        e = new CommandExecutor(cmd, pathSelector.getPredictTaskOutputPath(predictRequest.id));
         e.usingFiles = Arrays.asList(predictRequest.img1,predictRequest.img2);
         if (isFilesUsing(predictRequest.img1, predictRequest.img2)) {
             return BaseResponse.fail("selecting files is using by other task");
@@ -72,17 +72,15 @@ public class PredictController {
         if (!files.contains(predictRequest.img1) || !files.contains(predictRequest.img2)) {
             return BaseResponse.fail("server has not these images");
         }
-        String dockerOutputPath = pathSelector.getDockerBasePath("resultset") + "/" + predictRequest.id + "/";
-        String realOutPath = pathSelector.getRealPath("resultset") + "/" + predictRequest.id + "/";
         CommandExecutor e = mTaskList.get(predictRequest.id);
         if (e != null && !e.hasFinished()) {
             return BaseResponse.fail(predictRequest.id + " task has executed!");
         }
         String cmd = buildingPredictCommand
-                .replace("$model", pathSelector.getDockerBasePath(buildingBundleName))
-                .replace("$img1", pathSelector.getDockerBasePath(predictRequest.img1))
-                .replace("$output", dockerOutputPath);
-        e = new CommandExecutor(cmd, realOutPath);
+                .replace("$model", pathSelector.getModelBundleDir() + buildingBundleName)
+                .replace("$img1", pathSelector.getPredictImagePath(predictRequest.img1))
+                .replace("$output", pathSelector.getPredictTaskOutputPath(predictRequest.id));
+        e = new CommandExecutor(cmd, pathSelector.getPredictTaskOutputPath(predictRequest.id));
         e.usingFiles = Arrays.asList(predictRequest.img1);
         if (isFilesUsing(predictRequest.img1)) {
             return BaseResponse.fail("selecting files is using by other task");

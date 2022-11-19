@@ -32,4 +32,39 @@ public class PathSelector {
             return windowsPath;
         }
     }
+
+    public String getUploadImageDir() {
+        String dir = getRealDir() + "origin_images" + File.separator;
+        File f = new File(dir);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        return dir;
+    }
+
+    public String getCogImageDir() {
+        String dir = getRealDir() + "images" + File.separator;
+        File f = new File(dir);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        return dir;
+    }
+
+    public String getModelBundleDir() {
+        String dir = getRealDir() + "model" + File.separator;
+        File f = new File(dir);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        return dir;
+    }
+
+    public String getPredictImagePath(String imageName) {
+        return getUploadImageDir() + imageName;
+    }
+
+    public String getPredictTaskOutputPath(String taskId) {
+        return getRealDir() + "resultset" + File.separator + taskId + File.separator;
+    }
 }
