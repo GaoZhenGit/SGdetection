@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandExecutor implements Runnable {
@@ -15,10 +16,15 @@ public class CommandExecutor implements Runnable {
     private boolean hasFinished = false;
     private int resultCode = 0;
     public List<String> usingFiles;
+    private final List<Runnable> mPostMission = new ArrayList<>();
 
     public CommandExecutor(String cmd, String outputDir) {
         this.cmd = cmd;
         this.outputDir = outputDir;
+    }
+
+    public void addPostMission(Runnable runnable) {
+        mPostMission.add(runnable);
     }
 
     @Override
@@ -52,6 +58,9 @@ public class CommandExecutor implements Runnable {
                 logger.error("==========execute fail==========");
             }
             resultCode = proc;
+            for (Runnable r : mPostMission) {
+                r.run();
+            }
         } catch (IOException | InterruptedException e) {
             logger.error("", e);
         } finally {

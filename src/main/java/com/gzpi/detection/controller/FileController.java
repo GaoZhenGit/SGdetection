@@ -33,7 +33,7 @@ public class FileController {
 
     @RequestMapping(value = "uploadImg", method = RequestMethod.POST)
     @ResponseBody
-    public BaseResponse uploadImg(@RequestParam("file") MultipartFile file, @RequestParam("name") String name) {
+    public BaseResponse uploadImg(@RequestParam("file") MultipartFile file, @RequestParam(value = "name",required = false) String name) {
         if (name == null) {
             name = file.getOriginalFilename();
         }
@@ -41,9 +41,9 @@ public class FileController {
         boolean ret = upload(file, pathSelector.getUploadImageDir(), name);
         try {
             //TODO akil 这里需要转cog再复制
-            File src = new File(pathSelector.getUploadImageDir(), name);
-            File des = new File(pathSelector.getCogImageDir(), name);
-            FileSystemUtils.copyRecursively(src, des);
+//            File src = new File(pathSelector.getUploadImageDir(), name);
+//            File des = new File(pathSelector.getCogImageDir(), name);
+//            FileSystemUtils.copyRecursively(src, des);
         } catch (Exception e) {
             logger.error("file process fail", e);
         }
@@ -58,7 +58,7 @@ public class FileController {
     @ResponseBody
     public FileListResponse images() {
         FileListResponse response = new FileListResponse();
-        File workspace = new File(pathSelector.getCogImageDir());
+        File workspace = new File(pathSelector.getUploadImageDir());
         String[] files = workspace.list((dir, name) -> {
             File f = new File(dir + File.separator + name);
             boolean isTif = name.endsWith(".tif") || name.endsWith(".tiff");
@@ -68,9 +68,10 @@ public class FileController {
         if (files != null) {
             response.files = Arrays.asList(files);
         }
-        response.msg = pathSelector.getRealDir();
+        response.msg = pathSelector.getUploadImageDir();
         return response;
     }
+
     public FileListResponse listFiles() {
         FileListResponse response = new FileListResponse();
         File workspace = new File(pathSelector.getUploadImageDir());
@@ -104,7 +105,7 @@ public class FileController {
     public ResponseEntity<?> resultImg(@PathVariable(name = "id") String taskId) {
         try {
             String name = "labels.tif";
-            String path = pathSelector.getRealPath("resultset") + File.separator + taskId + File.separator + "result" + File.separator + name;
+            String path = pathSelector.getPredictTaskOutputPath(taskId) + "result" + File.separator + name;
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "attachment;filename=" + name);
             return ResponseEntity.ok()
@@ -119,7 +120,7 @@ public class FileController {
     public ResponseEntity<?> result(@PathVariable(name = "id") String taskId) {
         try {
             String name = "0-polygons.json";
-            String path = pathSelector.getRealPath("resultset") + File.separator + taskId + File.separator + "result" + File.separator + name;
+            String path = pathSelector.getPredictTaskOutputPath(taskId) + "result" + File.separator + name;
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "attachment;filename=" + name);
             return ResponseEntity.ok()

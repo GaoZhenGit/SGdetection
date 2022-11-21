@@ -34,15 +34,6 @@ public class PathSelector {
     }
 
     public String getUploadImageDir() {
-        String dir = getRealDir() + "origin_images" + File.separator;
-        File f = new File(dir);
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-        return dir;
-    }
-
-    public String getCogImageDir() {
         String dir = getRealDir() + "images" + File.separator;
         File f = new File(dir);
         if (!f.exists()) {

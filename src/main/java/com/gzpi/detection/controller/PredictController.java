@@ -10,8 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -59,6 +62,25 @@ public class PredictController {
         if (isFilesUsing(predictRequest.img1, predictRequest.img2)) {
             return BaseResponse.fail("selecting files is using by other task");
         }
+        e.addPostMission(() -> {
+            logger.info("checking result of task:" + predictRequest.id);
+            String path = pathSelector.getPredictTaskOutputPath(predictRequest.id) + "result" + File.separator + "labels.tif";
+            File src = new File(path);
+            if (!src.exists()) {
+                logger.error("task " + predictRequest.id + " result not exist!");
+                return;
+            }
+            if (predictRequest.output == null || predictRequest.output.isEmpty()) {
+                predictRequest.output = predictRequest.id + ".tif";
+            }
+            File des = new File(pathSelector.getUploadImageDir() + predictRequest.output);
+            try {
+                FileSystemUtils.copyRecursively(src, des);
+            } catch (IOException ex) {
+                logger.error("task " + predictRequest.id + " result copy fail:" + ex.getMessage());
+            }
+            logger.info("copy finish result of task:" + predictRequest.id);
+        });
         mTaskList.put(predictRequest.id, e);
         mThreadPool.execute(e);
         logger.info("start predict:" + predictRequest.id);
@@ -85,6 +107,25 @@ public class PredictController {
         if (isFilesUsing(predictRequest.img1)) {
             return BaseResponse.fail("selecting files is using by other task");
         }
+        e.addPostMission(() -> {
+            logger.info("checking result of task:" + predictRequest.id);
+            String path = pathSelector.getPredictTaskOutputPath(predictRequest.id) + "result" + File.separator + "labels.tif";
+            File src = new File(path);
+            if (!src.exists()) {
+                logger.error("task " + predictRequest.id + " result not exist!");
+                return;
+            }
+            if (predictRequest.output == null || predictRequest.output.isEmpty()) {
+                predictRequest.output = predictRequest.id + ".tif";
+            }
+            File des = new File(pathSelector.getUploadImageDir() + predictRequest.output);
+            try {
+                FileSystemUtils.copyRecursively(src, des);
+            } catch (IOException ex) {
+                logger.error("task " + predictRequest.id + " result copy fail:" + ex.getMessage());
+            }
+            logger.info("copy finish result of task:" + predictRequest.id);
+        });
         mTaskList.put(predictRequest.id, e);
         mThreadPool.execute(e);
         logger.info("start predict:" + predictRequest.id);

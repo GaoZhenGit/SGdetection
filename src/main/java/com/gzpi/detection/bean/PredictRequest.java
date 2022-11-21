@@ -4,4 +4,5 @@ public class PredictRequest {
     public String id;
     public String img1;
     public String img2;
+    public String output;
 }
