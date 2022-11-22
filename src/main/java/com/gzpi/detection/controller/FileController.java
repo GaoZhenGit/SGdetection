@@ -84,7 +84,7 @@ public class FileController {
         if (files != null) {
             response.files = Arrays.asList(files);
         }
-        response.msg = pathSelector.getRealDir();
+        response.msg = pathSelector.getUploadImageDir();
         return response;
     }
 

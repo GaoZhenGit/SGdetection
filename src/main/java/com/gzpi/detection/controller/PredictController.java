@@ -89,9 +89,9 @@ public class PredictController {
 
     @RequestMapping(value = "building/predict", method = RequestMethod.POST)
     @ResponseBody
-    public BaseResponse predict(@RequestBody PredictRequest predictRequest) {
+    public BaseResponse buildingPredict(@RequestBody PredictRequest predictRequest) {
         List<String> files = fileController.listFiles().files;
-        if (!files.contains(predictRequest.img1) || !files.contains(predictRequest.img2)) {
+        if (!files.contains(predictRequest.img1)) {
             return BaseResponse.fail("server has not these images");
         }
         CommandExecutor e = mTaskList.get(predictRequest.id);
