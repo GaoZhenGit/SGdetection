@@ -64,7 +64,7 @@ public class CommandExecutor implements Runnable {
         } catch (IOException | InterruptedException e) {
             logger.error("", e);
         } finally {
-            if (resultCode != 0) {
+            if (resultCode != 0 && outputDir != null) {
                 File dir = new File(outputDir);
                 deleteDirectoryLegacyIO(dir);
             }

@@ -62,7 +62,7 @@ public class FileController {
         String[] files = workspace.list((dir, name) -> {
             File f = new File(dir + File.separator + name);
             boolean isTif = name.endsWith(".tif") || name.endsWith(".tiff");
-            boolean isGeojson = name.endsWith(".geojson");
+            boolean isGeojson = name.endsWith(".geojson") || name.endsWith(".json");
             return !f.isDirectory() && (isTif || isGeojson);
         });
         if (files != null) {

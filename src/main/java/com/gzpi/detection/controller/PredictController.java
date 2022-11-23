@@ -3,6 +3,7 @@ package com.gzpi.detection.controller;
 import com.gzpi.detection.bean.BaseResponse;
 import com.gzpi.detection.bean.PredictRequest;
 import com.gzpi.detection.bean.PredictResponse;
+import com.gzpi.detection.mission.CopyGeoJsonMission;
 import com.gzpi.detection.operation.CommandExecutor;
 import com.gzpi.detection.operation.PathSelector;
 import org.slf4j.Logger;
@@ -33,6 +34,8 @@ public class PredictController {
     private final Executor mThreadPool = Executors.newCachedThreadPool();
     private final Map<String, CommandExecutor> mTaskList = new ConcurrentHashMap<>();
 
+    @Value("${band.python.path}")
+    private String expandBandCommand;
     @Value("${change.predict.command}")
     private String changePredictCommand;
     @Value("${building.predict.command}")
@@ -62,25 +65,7 @@ public class PredictController {
         if (isFilesUsing(predictRequest.img1, predictRequest.img2)) {
             return BaseResponse.fail("selecting files is using by other task");
         }
-        e.addPostMission(() -> {
-            logger.info("checking result of task:" + predictRequest.id);
-            String path = pathSelector.getPredictTaskOutputPath(predictRequest.id) + "result" + File.separator + "labels.tif";
-            File src = new File(path);
-            if (!src.exists()) {
-                logger.error("task " + predictRequest.id + " result not exist!");
-                return;
-            }
-            if (predictRequest.output == null || predictRequest.output.isEmpty()) {
-                predictRequest.output = predictRequest.id + ".tif";
-            }
-            File des = new File(pathSelector.getUploadImageDir() + predictRequest.output);
-            try {
-                FileSystemUtils.copyRecursively(src, des);
-            } catch (IOException ex) {
-                logger.error("task " + predictRequest.id + " result copy fail:" + ex.getMessage());
-            }
-            logger.info("copy finish result of task:" + predictRequest.id);
-        });
+        e.addPostMission(new CopyGeoJsonMission(predictRequest, pathSelector, logger));
         mTaskList.put(predictRequest.id, e);
         mThreadPool.execute(e);
         logger.info("start predict:" + predictRequest.id);
@@ -107,25 +92,7 @@ public class PredictController {
         if (isFilesUsing(predictRequest.img1)) {
             return BaseResponse.fail("selecting files is using by other task");
         }
-        e.addPostMission(() -> {
-            logger.info("checking result of task:" + predictRequest.id);
-            String path = pathSelector.getPredictTaskOutputPath(predictRequest.id) + "result" + File.separator + "labels.tif";
-            File src = new File(path);
-            if (!src.exists()) {
-                logger.error("task " + predictRequest.id + " result not exist!");
-                return;
-            }
-            if (predictRequest.output == null || predictRequest.output.isEmpty()) {
-                predictRequest.output = predictRequest.id + ".tif";
-            }
-            File des = new File(pathSelector.getUploadImageDir() + predictRequest.output);
-            try {
-                FileSystemUtils.copyRecursively(src, des);
-            } catch (IOException ex) {
-                logger.error("task " + predictRequest.id + " result copy fail:" + ex.getMessage());
-            }
-            logger.info("copy finish result of task:" + predictRequest.id);
-        });
+        e.addPostMission(new CopyGeoJsonMission(predictRequest, pathSelector, logger));
         mTaskList.put(predictRequest.id, e);
         mThreadPool.execute(e);
         logger.info("start predict:" + predictRequest.id);
