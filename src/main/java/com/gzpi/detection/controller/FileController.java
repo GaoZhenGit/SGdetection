@@ -2,10 +2,12 @@ package com.gzpi.detection.controller;
 
 import com.gzpi.detection.bean.BaseResponse;
 import com.gzpi.detection.bean.FileListResponse;
+import com.gzpi.detection.operation.CommandExecutor;
 import com.gzpi.detection.operation.PathSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +22,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 
 @Controller
 @CrossOrigin
@@ -28,6 +31,8 @@ public class FileController {
     Logger logger = LoggerFactory.getLogger(FileController.class);
     @Autowired
     private PathSelector pathSelector;
+    @Value("${cog.python.path}")
+    private String cogPythonPath;
     private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 
@@ -38,19 +43,24 @@ public class FileController {
             name = file.getOriginalFilename();
         }
         logger.info("uploading file:" + name);
-        boolean ret = upload(file, pathSelector.getUploadImageDir(), name);
+        boolean ret = upload(file, pathSelector.getTempDir(), name);
+        if (!ret) {
+            return BaseResponse.fail("upload fail");
+        }
         try {
-            //TODO akil 这里需要转cog再复制
-//            File src = new File(pathSelector.getUploadImageDir(), name);
-//            File des = new File(pathSelector.getCogImageDir(), name);
-//            FileSystemUtils.copyRecursively(src, des);
+            String originImagePath = pathSelector.getTempDir() + name;
+            String cogImagePath = pathSelector.getUploadImageDir() + name;
+            String cmd = "python " + cogPythonPath.replace("$src", originImagePath).replace("$des", cogImagePath);
+            CommandExecutor cogExecutor = new CommandExecutor(cmd, cogImagePath);
+            cogExecutor.run();
+            ret = cogExecutor.getResultCode() == 0;
         } catch (Exception e) {
             logger.error("file process fail", e);
         }
         if (ret) {
             return BaseResponse.success();
         } else {
-            return BaseResponse.fail("upload fail");
+            return BaseResponse.fail("cog transform fail");
         }
     }
 
@@ -67,6 +77,7 @@ public class FileController {
         });
         if (files != null) {
             response.files = Arrays.asList(files);
+            response.files.sort(String::compareTo);
         }
         response.msg = pathSelector.getUploadImageDir();
         return response;

@@ -42,6 +42,15 @@ public class PathSelector {
         return dir;
     }
 
+    public String getTempDir() {
+        String dir = getRealDir() + "tmp" + File.separator;
+        File f = new File(dir);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        return dir;
+    }
+
     public String getModelBundleDir() {
         String dir = getRealDir() + "model" + File.separator;
         File f = new File(dir);
