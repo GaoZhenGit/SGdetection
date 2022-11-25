@@ -1,8 +1,9 @@
 package com.gzpi.detection.controller;
 
 import com.gzpi.detection.bean.BaseResponse;
+import com.gzpi.detection.bean.DatasetMission;
 import com.gzpi.detection.bean.DatasetProject;
-import com.gzpi.detection.bean.DatasetProjectResponse;
+import com.gzpi.detection.bean.DatasetResponse;
 import com.gzpi.detection.service.IDatasetService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +47,45 @@ public class DatasetController {
 
     @RequestMapping(value = "project/all", method = RequestMethod.GET)
     @ResponseBody
-    public DatasetProjectResponse getAllProject() {
+    public DatasetResponse<DatasetProject> getAllProject() {
         List<DatasetProject> datasetProjects = datasetService.getAllProject();
-        DatasetProjectResponse response = new DatasetProjectResponse();
+        DatasetResponse<DatasetProject> response = new DatasetResponse<>();
         response.list = datasetProjects;
         response.msg = "success";
         return response;
+    }
+
+    @RequestMapping(value = "mission/all", method = RequestMethod.GET)
+    @ResponseBody
+    public DatasetResponse<DatasetMission> getMissionsByProjectId(@RequestParam(value = "projectId",required = false) String pid) {
+        List<DatasetMission> datasetMissions = datasetService.getMissionsByProjectId(pid);
+        DatasetResponse<DatasetMission> response = new DatasetResponse<>();
+        response.list = datasetMissions;
+        response.msg = "success";
+        return response;
+    }
+
+    @RequestMapping(value = "mission/add", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse addProject(@RequestBody DatasetMission mission) {
+        try {
+            datasetService.addMission(mission);
+            return BaseResponse.success();
+        } catch (Exception e) {
+            log.error("add dataset mission fail", e);
+            return BaseResponse.fail(e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "mission/delete/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse deleteMission(@PathVariable("id") String id) {
+        try {
+            datasetService.deleteMission(id);
+            return BaseResponse.success();
+        } catch (Exception e) {
+            log.error("delete dataset Mission fail", e);
+            return BaseResponse.fail(e.getMessage());
+        }
     }
 }

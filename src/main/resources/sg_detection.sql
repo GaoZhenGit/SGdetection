@@ -8,14 +8,28 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 
+DROP TABLE IF EXISTS `mission`;
+CREATE TABLE IF NOT EXISTS `mission` (
+    `id` varchar(50) NOT NULL,
+    `name` varchar(200) NOT NULL,
+    `image_name` varchar(200) NOT NULL,
+    `project_id` varchar(50) NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `project_id` (`project_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 DROP TABLE IF EXISTS `project`;
 CREATE TABLE IF NOT EXISTS `project` (
-  `id` varchar(50) NOT NULL,
-  `name` varchar(200) NOT NULL,
-  `type` varchar(20) NOT NULL,
-  `clip_size` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+    `id` varchar(50) NOT NULL,
+    `name` varchar(200) NOT NULL,
+    `type` varchar(20) NOT NULL,
+    `clip_size` int(11) NOT NULL,
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE `mission`
+    ADD CONSTRAINT `mission_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

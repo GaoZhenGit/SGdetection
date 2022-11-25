@@ -1,6 +1,8 @@
 package com.gzpi.detection.service;
 
+import com.gzpi.detection.bean.DatasetMission;
 import com.gzpi.detection.bean.DatasetProject;
+import com.gzpi.detection.mapper.DatasetMissionMapper;
 import com.gzpi.detection.mapper.DatasetProjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import java.util.List;
 public class DatasetServiceImpl implements IDatasetService {
     @Autowired
     private DatasetProjectMapper projectMapper;
+    @Autowired
+    private DatasetMissionMapper missionMapper;
+
     @Override
     public void addProject(DatasetProject project) {
         projectMapper.save(project);
@@ -28,15 +33,22 @@ public class DatasetServiceImpl implements IDatasetService {
         projectMapper.delete(id);
     }
 
-    public void createLabelMission() {
-
+    @Override
+    public List<DatasetMission> getMissionsByProjectId(String projectId) {
+        if (projectId == null || projectId.isEmpty()) {
+            return missionMapper.getAllMission();
+        } else {
+            return missionMapper.getMissionByProjectId(projectId);
+        }
     }
 
-    public void getLabelMissions() {
-
+    @Override
+    public void addMission(DatasetMission mission) {
+        missionMapper.save(mission);
     }
 
-    public void deleteLabelMission() {
-
+    @Override
+    public void deleteMission(String id) {
+        missionMapper.delete(id);
     }
 }

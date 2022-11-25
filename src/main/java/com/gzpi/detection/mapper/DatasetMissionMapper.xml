@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gzpi.detection.mapper.DatasetMissionMapper">
+    <resultMap id="baseMap" type="com.gzpi.detection.bean.DatasetMission">
+        <id column="id" property="id"/>
+        <result column="name" property="name" />
+        <result column="image_name" property="imageName" />
+        <association property="project" javaType="com.gzpi.detection.bean.DatasetProject">
+            <id column="pid" property="id"/>
+            <result column="pname" property="name"/>
+            <result column="type" property="type" />
+            <result column="clip_size" property="clipSize" />
+        </association>
+    </resultMap>
+    <select id="getMissionById" parameterType="String" resultMap="baseMap">
+        SELECT mission.id as id, mission.name as name, image_name, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id and mission.id=#{id}
+    </select>
+    <select id="getAllMission" resultMap="baseMap">
+        SELECT mission.id as id, mission.name as name, image_name, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id
+    </select>
+    <select id="getMissionByProjectId" parameterType="String" resultMap="baseMap">
+        SELECT mission.id as id, mission.name as name, image_name, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id and project.id=#{id}
+    </select>
+    <insert id="save" parameterType="com.gzpi.detection.bean.DatasetProject">
+        insert into mission(id, name, image_name, project_id) VALUES (#{id}, #{name}, #{imageName}, #{project.id})
+    </insert>
+    <delete id="delete" parameterType="String">
+        delete from mission WHERE id=#{id}
+    </delete>
+</mapper>
