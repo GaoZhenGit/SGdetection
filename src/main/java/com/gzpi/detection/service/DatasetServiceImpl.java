@@ -4,10 +4,12 @@ import com.gzpi.detection.bean.DatasetMission;
 import com.gzpi.detection.bean.DatasetProject;
 import com.gzpi.detection.mapper.DatasetMissionMapper;
 import com.gzpi.detection.mapper.DatasetProjectMapper;
+import com.gzpi.detection.operation.PathSelector;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 
 @Slf4j
@@ -17,6 +19,8 @@ public class DatasetServiceImpl implements IDatasetService {
     private DatasetProjectMapper projectMapper;
     @Autowired
     private DatasetMissionMapper missionMapper;
+    @Autowired
+    private PathSelector pathSelector;
 
     @Override
     public void addProject(DatasetProject project) {
@@ -43,8 +47,14 @@ public class DatasetServiceImpl implements IDatasetService {
     }
 
     @Override
-    public void addMission(DatasetMission mission) {
-        missionMapper.save(mission);
+    public void addMission(DatasetMission mission) throws Exception {
+        String imagePath = pathSelector.getPredictImagePath(mission.imageName);
+        File imageFile = new File(imagePath);
+        if (imageFile.exists()) {
+            missionMapper.save(mission);
+        } else {
+            throw new Exception("image " + mission.imageName + " not exist");
+        }
     }
 
     @Override

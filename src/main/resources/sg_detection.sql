@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `mission` (
     `id` varchar(50) NOT NULL,
     `name` varchar(200) NOT NULL,
     `image_name` varchar(200) NOT NULL,
+    `finish` tinyint(1) NOT NULL,
     `project_id` varchar(50) NOT NULL,
     PRIMARY KEY (`id`),
     KEY `project_id` (`project_id`)

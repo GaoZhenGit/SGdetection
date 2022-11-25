@@ -67,4 +67,13 @@ public class PathSelector {
     public String getPredictTaskOutputPath(String taskId) {
         return getRealDir() + "resultset" + File.separator + taskId + File.separator;
     }
+
+    public String getDatasetLabelDir() {
+        String dir = getRealDir() + "labels" + File.separator;
+        File f = new File(dir);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        return dir;
+    }
 }
