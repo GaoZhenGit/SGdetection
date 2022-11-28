@@ -106,4 +106,27 @@ public class DatasetController {
             return BaseResponse.fail(e.getMessage());
         }
     }
+    @RequestMapping(value = "sample/addFromMissions", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse createFromMissions(@RequestBody DatasetRequest<List<String>> request) {
+        try {
+            datasetService.addSampleFromMissions(request);
+            return BaseResponse.success();
+        } catch (Exception e) {
+            log.error("save dataset sample fail", e);
+            return BaseResponse.fail(e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "sample/delete/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse deleteSample(@PathVariable("id") String id) {
+        try {
+            datasetService.deleteSample(id);
+            return BaseResponse.success();
+        } catch (Exception e) {
+            log.error("delete dataset Mission fail", e);
+            return BaseResponse.fail(e.getMessage());
+        }
+    }
 }

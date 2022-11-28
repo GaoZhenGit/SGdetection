@@ -2,6 +2,7 @@ package com.gzpi.detection.service;
 
 import com.gzpi.detection.bean.DatasetMission;
 import com.gzpi.detection.bean.DatasetProject;
+import com.gzpi.detection.bean.DatasetRequest;
 import com.gzpi.detection.bean.DatasetSample;
 
 import java.util.List;
@@ -18,4 +19,6 @@ public interface IDatasetService {
     DatasetSample getSampleById(String sampleId);
     List<DatasetSample> getAllSamples();
     void saveSample(DatasetSample sample);
+    void addSampleFromMissions(DatasetRequest<List<String>> request);
+    void deleteSample(String id);
 }
