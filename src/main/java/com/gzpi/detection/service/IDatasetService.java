@@ -17,4 +17,5 @@ public interface IDatasetService {
 
     DatasetSample getSampleById(String sampleId);
     List<DatasetSample> getAllSamples();
+    void saveSample(DatasetSample sample);
 }

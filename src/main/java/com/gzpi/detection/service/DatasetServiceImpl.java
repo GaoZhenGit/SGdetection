@@ -1,5 +1,6 @@
 package com.gzpi.detection.service;
 
+import com.gzpi.detection.bean.DatasetItem;
 import com.gzpi.detection.bean.DatasetMission;
 import com.gzpi.detection.bean.DatasetProject;
 import com.gzpi.detection.bean.DatasetSample;
@@ -74,5 +75,13 @@ public class DatasetServiceImpl implements IDatasetService {
     @Override
     public List<DatasetSample> getAllSamples() {
         return sampleMapper.getAllSamples();
+    }
+
+    public void saveSample(DatasetSample datasetSample) {
+        for (DatasetItem item : datasetSample.items) {
+            item.sampleId = datasetSample.id;
+        }
+        sampleMapper.save(datasetSample);
+        sampleMapper.saveItem(datasetSample.items);
     }
 }

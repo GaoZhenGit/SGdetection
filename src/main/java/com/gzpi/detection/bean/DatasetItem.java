@@ -4,4 +4,5 @@ public class DatasetItem {
     public String id;
     public String imageName;
     public String labelName;
+    public String sampleId;
 }

@@ -94,4 +94,16 @@ public class DatasetController {
         response.msg = "success";
         return response;
     }
+
+    @RequestMapping(value = "sample/add", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse save(@RequestBody DatasetSample sample) {
+        try {
+            datasetService.saveSample(sample);
+            return BaseResponse.success();
+        } catch (Exception e) {
+            log.error("save dataset sample fail", e);
+            return BaseResponse.fail(e.getMessage());
+        }
+    }
 }
