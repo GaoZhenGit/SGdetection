@@ -7,6 +7,17 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+CREATE DATABASE IF NOT EXISTS `sg_detection` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `sg_detection`;
+
+DROP TABLE IF EXISTS `data_item`;
+CREATE TABLE IF NOT EXISTS `data_item` (
+    `id` varchar(50) NOT NULL,
+    `image_name` varchar(200) NOT NULL,
+    `label_name` varchar(200) NOT NULL,
+    `sample_id` varchar(50) NOT NULL,
+    KEY `data_item_ibfk_1` (`sample_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `mission`;
 CREATE TABLE IF NOT EXISTS `mission` (
@@ -28,6 +39,16 @@ CREATE TABLE IF NOT EXISTS `project` (
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `sample`;
+CREATE TABLE IF NOT EXISTS `sample` (
+    `id` varchar(50) NOT NULL,
+    `name` varchar(200) NOT NULL,
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE `data_item`
+    ADD CONSTRAINT `data_item_ibfk_1` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `mission`
     ADD CONSTRAINT `mission_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
