@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gzpi.detection.mapper.DatasetSampleMapper">
+    <resultMap id="baseMap" type="com.gzpi.detection.bean.DatasetSample">
+        <id column="id" property="id"/>
+        <result column="name" property="name" />
+        <collection property="items" ofType="com.gzpi.detection.bean.DatasetItem">
+            <id column="pid" property="id"/>
+            <result column="image_name" property="imageName" />
+            <result column="label_name" property="labelName" />
+        </collection>
+    </resultMap>
+    <select id="getSampleById" parameterType="String" resultMap="baseMap">
+        SELECT sample.id, sample.name, data_item.id as pid, image_name, label_name FROM sample, data_item WHERE sample.id=data_item.sample_id and id=#{id}
+    </select>
+    <select id="getAllSamples" resultMap="baseMap">
+        SELECT sample.id, sample.name, data_item.id as pid, image_name, label_name FROM sample, data_item WHERE sample.id=data_item.sample_id
+    </select>
+    <insert id="save" parameterType="com.gzpi.detection.bean.DatasetSample">
+        insert into sample(id, name) VALUES (#{id}, #{name})
+    </insert>
+    <delete id="delete" parameterType="String">
+        delete from sample WHERE id=#{id}
+    </delete>
+</mapper>

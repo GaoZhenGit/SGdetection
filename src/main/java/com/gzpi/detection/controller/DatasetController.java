@@ -1,9 +1,6 @@
 package com.gzpi.detection.controller;
 
-import com.gzpi.detection.bean.BaseResponse;
-import com.gzpi.detection.bean.DatasetMission;
-import com.gzpi.detection.bean.DatasetProject;
-import com.gzpi.detection.bean.DatasetResponse;
+import com.gzpi.detection.bean.*;
 import com.gzpi.detection.service.IDatasetService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,5 +84,14 @@ public class DatasetController {
             log.error("delete dataset Mission fail", e);
             return BaseResponse.fail(e.getMessage());
         }
+    }
+
+    @RequestMapping(value = "sample/all", method = RequestMethod.GET)
+    @ResponseBody
+    public DatasetResponse<DatasetSample> getAllSamples() {
+        DatasetResponse<DatasetSample> response = new DatasetResponse<>();
+        response.list = datasetService.getAllSamples();
+        response.msg = "success";
+        return response;
     }
 }

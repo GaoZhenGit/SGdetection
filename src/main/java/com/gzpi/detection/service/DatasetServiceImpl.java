@@ -2,8 +2,10 @@ package com.gzpi.detection.service;
 
 import com.gzpi.detection.bean.DatasetMission;
 import com.gzpi.detection.bean.DatasetProject;
+import com.gzpi.detection.bean.DatasetSample;
 import com.gzpi.detection.mapper.DatasetMissionMapper;
 import com.gzpi.detection.mapper.DatasetProjectMapper;
+import com.gzpi.detection.mapper.DatasetSampleMapper;
 import com.gzpi.detection.operation.PathSelector;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ public class DatasetServiceImpl implements IDatasetService {
     private DatasetProjectMapper projectMapper;
     @Autowired
     private DatasetMissionMapper missionMapper;
+    @Autowired
+    private DatasetSampleMapper sampleMapper;
     @Autowired
     private PathSelector pathSelector;
 
@@ -60,5 +64,15 @@ public class DatasetServiceImpl implements IDatasetService {
     @Override
     public void deleteMission(String id) {
         missionMapper.delete(id);
+    }
+
+    @Override
+    public DatasetSample getSampleById(String sampleId) {
+        return sampleMapper.getSampleById(sampleId);
+    }
+
+    @Override
+    public List<DatasetSample> getAllSamples() {
+        return sampleMapper.getAllSamples();
     }
 }
