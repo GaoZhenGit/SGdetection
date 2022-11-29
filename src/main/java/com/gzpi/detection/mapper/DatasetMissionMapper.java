@@ -10,6 +10,7 @@ public interface DatasetMissionMapper {
     DatasetMission getMissionById(String id);
     List<DatasetMission> getMissionByProjectId(String id);
     List<DatasetMission> getAllMission();
-    void save(DatasetMission Mission);
+    void save(DatasetMission mission);
+    void update(DatasetMission mission);
     void delete(String id);
 }

@@ -54,7 +54,12 @@ public class DatasetServiceImpl implements IDatasetService {
         String imagePath = pathSelector.getPredictImagePath(mission.imageName);
         File imageFile = new File(imagePath);
         if (imageFile.exists()) {
-            missionMapper.save(mission);
+            DatasetMission existMission = missionMapper.getMissionById(mission.id);
+            if (existMission == null) {
+                missionMapper.save(mission);
+            } else {
+                missionMapper.update(mission);
+            }
         } else {
             throw new Exception("image " + mission.imageName + " not exist");
         }

@@ -22,9 +22,12 @@
     <select id="getMissionByProjectId" parameterType="String" resultMap="baseMap">
         SELECT mission.id as id, mission.name as name, image_name, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id and project.id=#{id}
     </select>
-    <insert id="save" parameterType="com.gzpi.detection.bean.DatasetProject">
+    <insert id="save" parameterType="com.gzpi.detection.bean.DatasetMission">
         insert into mission(id, name, image_name, finish, project_id) VALUES (#{id}, #{name}, #{imageName}, #{finish}, #{project.id})
     </insert>
+    <update id="update" parameterType="com.gzpi.detection.bean.DatasetMission">
+        UPDATE mission SET name=#{name}, image_name=#{imageName}, finish=#{finish}, project_id=#{project.id} WHERE id=#{id}
+    </update>
     <delete id="delete" parameterType="String">
         delete from mission WHERE id=#{id}
     </delete>
