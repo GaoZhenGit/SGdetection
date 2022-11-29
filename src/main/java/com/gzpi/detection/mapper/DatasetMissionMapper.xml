@@ -5,6 +5,7 @@
         <id column="id" property="id"/>
         <result column="name" property="name" />
         <result column="image_name" property="imageName" />
+        <result column="image_2_name" property="image2Name" />
         <result column="finish" property="finish" />
         <association property="project" javaType="com.gzpi.detection.bean.DatasetProject">
             <id column="pid" property="id"/>
@@ -14,19 +15,19 @@
         </association>
     </resultMap>
     <select id="getMissionById" parameterType="String" resultMap="baseMap">
-        SELECT mission.id as id, mission.name as name, image_name, finish, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id and mission.id=#{id}
+        SELECT mission.id as id, mission.name as name, image_name, image_2_name, finish, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id and mission.id=#{id}
     </select>
     <select id="getAllMission" resultMap="baseMap">
-        SELECT mission.id as id, mission.name as name, image_name, finish, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id
+        SELECT mission.id as id, mission.name as name, image_name, image_2_name, finish, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id
     </select>
     <select id="getMissionByProjectId" parameterType="String" resultMap="baseMap">
-        SELECT mission.id as id, mission.name as name, image_name, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id and project.id=#{id}
+        SELECT mission.id as id, mission.name as name, image_name, image_2_name, project.id as pid, project.name as pname, type, clip_size FROM mission, project WHERE mission.project_id=project.id and project.id=#{id}
     </select>
     <insert id="save" parameterType="com.gzpi.detection.bean.DatasetMission">
-        insert into mission(id, name, image_name, finish, project_id) VALUES (#{id}, #{name}, #{imageName}, #{finish}, #{project.id})
+        insert into mission(id, name, image_name, image_2_name, finish, project_id) VALUES (#{id}, #{name}, #{imageName}, #{image2Name}, #{finish}, #{project.id})
     </insert>
     <update id="update" parameterType="com.gzpi.detection.bean.DatasetMission">
-        UPDATE mission SET name=#{name}, image_name=#{imageName}, finish=#{finish}, project_id=#{project.id} WHERE id=#{id}
+        UPDATE mission SET name=#{name}, image_name=#{imageName}, image_2_name=#{image2Name}, finish=#{finish}, project_id=#{project.id} WHERE id=#{id}
     </update>
     <delete id="delete" parameterType="String">
         delete from mission WHERE id=#{id}

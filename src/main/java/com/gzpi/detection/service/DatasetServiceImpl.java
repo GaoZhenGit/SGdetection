@@ -53,16 +53,16 @@ public class DatasetServiceImpl implements IDatasetService {
     public void addMission(DatasetMission mission) throws Exception {
         String imagePath = pathSelector.getPredictImagePath(mission.imageName);
         File imageFile = new File(imagePath);
-        if (imageFile.exists()) {
+//        if (imageFile.exists()) {
             DatasetMission existMission = missionMapper.getMissionById(mission.id);
             if (existMission == null) {
                 missionMapper.save(mission);
             } else {
                 missionMapper.update(mission);
             }
-        } else {
-            throw new Exception("image " + mission.imageName + " not exist");
-        }
+//        } else {
+//            throw new Exception("image " + mission.imageName + " not exist");
+//        }
     }
 
     @Override
@@ -101,6 +101,7 @@ public class DatasetServiceImpl implements IDatasetService {
             item.id = mission.id;
             item.sampleId = sample.id;
             item.imageName = mission.imageName;
+            item.image2Name = mission.image2Name;
             item.labelName = mission.imageName.replace(".tiff", ".geojson").replace(".tif", ".geojson");
             sample.items.add(item);
         }

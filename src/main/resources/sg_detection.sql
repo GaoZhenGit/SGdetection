@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS `data_item`;
 CREATE TABLE IF NOT EXISTS `data_item` (
     `id` varchar(50) NOT NULL,
     `image_name` varchar(200) NOT NULL,
+    `image_2_name` varchar(200),
     `label_name` varchar(200) NOT NULL,
     `sample_id` varchar(50) NOT NULL,
     KEY `data_item_ibfk_1` (`sample_id`)
@@ -24,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `mission` (
     `id` varchar(50) NOT NULL,
     `name` varchar(200) NOT NULL,
     `image_name` varchar(200) NOT NULL,
+    `image_2_name` varchar(200),
     `finish` tinyint(1) NOT NULL,
     `project_id` varchar(50) NOT NULL,
     PRIMARY KEY (`id`),
