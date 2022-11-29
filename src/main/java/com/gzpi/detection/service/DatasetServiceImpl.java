@@ -55,11 +55,26 @@ public class DatasetServiceImpl implements IDatasetService {
         if (existMission == null) {
             mission.labelName = "mi_" + mission.id + "_" + mission.imageName.replace(".tiff", ".geojson").replace(".tif", ".geojson");
             missionMapper.save(mission);
-            mission = missionMapper.getMissionById(mission.id);
         } else {
+            setMissionNull(existMission, mission);
             missionMapper.update(mission);
         }
+        mission = missionMapper.getMissionById(mission.id);
         return mission;
+    }
+    private void setMissionNull(DatasetMission src, DatasetMission des) {
+        if (des.name == null) {
+            des.name = src.name;
+        }
+        if (des.imageName == null) {
+            des.imageName = src.imageName;
+        }
+        if (des.image2Name == null) {
+            des.image2Name = src.image2Name;
+        }
+        if (des.labelName == null) {
+            des.labelName = src.labelName;
+        }
     }
 
     @Override

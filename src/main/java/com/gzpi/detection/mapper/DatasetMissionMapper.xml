@@ -28,7 +28,7 @@
         insert into mission(id, name, image_name, image_2_name, label_name, finish, project_id) VALUES (#{id}, #{name}, #{imageName}, #{image2Name}, #{labelName},#{finish}, #{project.id})
     </insert>
     <update id="update" parameterType="com.gzpi.detection.bean.DatasetMission">
-        UPDATE mission SET name=#{name}, image_name=#{imageName}, image_2_name=#{image2Name}, finish=#{finish}, project_id=#{project.id} WHERE id=#{id}
+        UPDATE mission SET name=#{name}, image_name=#{imageName}, image_2_name=#{image2Name}, finish=#{finish}, label_name=#{labelName}, project_id=#{project.id} WHERE id=#{id}
     </update>
     <delete id="delete" parameterType="String">
         delete from mission WHERE id=#{id}
