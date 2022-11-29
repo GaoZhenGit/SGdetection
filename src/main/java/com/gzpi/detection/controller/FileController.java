@@ -64,6 +64,24 @@ public class FileController {
         }
     }
 
+    @RequestMapping(value = "uploadGeojson", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse uploadGeojson(@RequestParam("file") MultipartFile file, @RequestParam(value = "name",required = false) String name) {
+        if (name == null) {
+            name = file.getOriginalFilename();
+        }
+        if (!name.endsWith(".geojson")) {
+            return BaseResponse.fail("not geojson format");
+        }
+        logger.info("uploading file:" + name);
+        boolean ret = upload(file, pathSelector.getUploadImageDir(), name);
+        if (ret) {
+            return BaseResponse.success();
+        } else {
+            return BaseResponse.fail("geojson upload fail");
+        }
+    }
+
     @RequestMapping(value = "images", method = RequestMethod.GET)
     @ResponseBody
     public FileListResponse images() {
