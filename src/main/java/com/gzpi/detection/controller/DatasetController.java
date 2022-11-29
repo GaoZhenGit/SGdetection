@@ -64,10 +64,13 @@ public class DatasetController {
 
     @RequestMapping(value = "mission/add", method = RequestMethod.POST)
     @ResponseBody
-    public BaseResponse addProject(@RequestBody DatasetMission mission) {
+    public BaseResponse addMission(@RequestBody DatasetMission mission) {
         try {
-            datasetService.addMission(mission);
-            return BaseResponse.success();
+            mission = datasetService.addMission(mission);
+            DatasetResponse<DatasetMission> response = new DatasetResponse<>();
+            response.msg = "success";
+            response.item = mission;
+            return response;
         } catch (Exception e) {
             log.error("add dataset mission fail", e);
             return BaseResponse.fail(e.getMessage());

@@ -5,4 +5,5 @@ import java.util.List;
 
 public class DatasetResponse<D> extends BaseResponse{
     public List<D> list = new ArrayList<>();
+    public D item;
 }

@@ -50,19 +50,16 @@ public class DatasetServiceImpl implements IDatasetService {
     }
 
     @Override
-    public void addMission(DatasetMission mission) throws Exception {
-        String imagePath = pathSelector.getPredictImagePath(mission.imageName);
-        File imageFile = new File(imagePath);
-//        if (imageFile.exists()) {
-            DatasetMission existMission = missionMapper.getMissionById(mission.id);
-            if (existMission == null) {
-                missionMapper.save(mission);
-            } else {
-                missionMapper.update(mission);
-            }
-//        } else {
-//            throw new Exception("image " + mission.imageName + " not exist");
-//        }
+    public DatasetMission addMission(DatasetMission mission) throws Exception {
+        DatasetMission existMission = missionMapper.getMissionById(mission.id);
+        if (existMission == null) {
+            mission.labelName = "mi_" + mission.id + "_" + mission.imageName.replace(".tiff", ".geojson").replace(".tif", ".geojson");
+            missionMapper.save(mission);
+            mission = missionMapper.getMissionById(mission.id);
+        } else {
+            missionMapper.update(mission);
+        }
+        return mission;
     }
 
     @Override
@@ -102,7 +99,10 @@ public class DatasetServiceImpl implements IDatasetService {
             item.sampleId = sample.id;
             item.imageName = mission.imageName;
             item.image2Name = mission.image2Name;
-            item.labelName = mission.imageName.replace(".tiff", ".geojson").replace(".tif", ".geojson");
+            item.labelName = mission.labelName;
+            if (item.labelName == null || item.labelName.isEmpty()) {
+                item.labelName = "mi_" + mission.id + "_" + mission.imageName.replace(".tiff", ".geojson").replace(".tif", ".geojson");
+            }
             sample.items.add(item);
         }
         sampleMapper.save(sample);

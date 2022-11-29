@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `mission` (
     `name` varchar(200) NOT NULL,
     `image_name` varchar(200) NOT NULL,
     `image_2_name` varchar(200),
+    `label_name` varchar(200) NOT NULL,
     `finish` tinyint(1) NOT NULL,
     `project_id` varchar(50) NOT NULL,
     PRIMARY KEY (`id`),

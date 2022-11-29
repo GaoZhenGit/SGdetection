@@ -5,6 +5,7 @@ public class DatasetMission {
     public String name;
     public String imageName;
     public String image2Name;
+    public String labelName;
     public boolean finish;
     public DatasetProject project;
 }
