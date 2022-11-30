@@ -5,13 +5,22 @@ public class TrainingModel {
     public String name;
     public String version;
     public String description;
-    public String sampleId;
-    public Parameter parameter;
-    public static class Parameter {
-        public int chipSize;
-        public int epoch;
-        public double learningRate;
-        public int batchSize;
+    public DatasetSample sample;
+    public int chipSize = 300;
+    public int epoch = 50;
+    public double learningRate = 1e-5;
+    public int batchSize = 8;
+    public Model model = Model.fcn_resetnet50;
+    public Backbone backbone = Backbone.resnet50;
 
+    public enum Model {
+        fcn_resetnet50,
+        inception_v3,
+        deeplabv3_resnet50
+    }
+
+    public enum Backbone {
+        resnet50,
+        resnet101
     }
 }

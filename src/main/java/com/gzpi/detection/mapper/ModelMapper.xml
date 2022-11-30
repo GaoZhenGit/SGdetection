@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gzpi.detection.mapper.ModelMapper">
+    <resultMap id="baseMap" type="com.gzpi.detection.bean.TrainingModel">
+        <id column="id" property="id"/>
+        <result column="name" property="name" />
+        <result column="version" property="version" />
+        <result column="description" property="description" />
+        <result column="chip_size" property="chipSize" />
+        <result column="epoch" property="epoch" />
+        <result column="learning_rate" property="learningRate" />
+        <result column="batch_size" property="batch_size" />
+        <result column="model" property="model" />
+        <result column="backbone" property="backbone" />
+        <association property="sample" javaType="com.gzpi.detection.bean.DatasetSample">
+            <id column="sid" property="id"/>
+            <result column="sname" property="name" />
+            <collection property="items" ofType="com.gzpi.detection.bean.DatasetItem">
+                <id column="item_id" property="id"/>
+                <result column="image_name" property="imageName" />
+                <result column="image_2_name" property="image2Name" />
+                <result column="label_name" property="labelName" />
+                <result column="sample_id" property="sampleId" />
+            </collection>
+        </association>
+    </resultMap>
+    <select id="getModelById" parameterType="String" resultMap="baseMap">
+        SELECT model.id, model.name, `version`, `description`, model.sample_id as sampleId, `chip_size` as chipSize, `epoch`, learning_rate, `batch_size` as batchSize, `model`, `backbone`, sample.id as sid, sample.name as sname, data_item.id as item_id,data_item.image_name, data_item.image_2_name, data_item.label_name FROM model, sample, data_item WHERE model.sample_id=sample.id AND data_item.sample_id=sample.id AND model.id=#{id}
+    </select>
+    <select id="getAllModels" resultType="com.gzpi.detection.bean.TrainingModel" resultMap="baseMap">
+        SELECT model.id, model.name, `version`, `description`, model.sample_id as sampleId, `chip_size` as chipSize, `epoch`, learning_rate, `batch_size` as batchSize, `model`, `backbone`, sample.id as sid, sample.name as sname, data_item.id as item_id,data_item.image_name, data_item.image_2_name, data_item.label_name FROM model, sample, data_item WHERE model.sample_id=sample.id AND data_item.sample_id=sample.id
+    </select>
+    <insert id="save" parameterType="com.gzpi.detection.bean.TrainingModel">
+        insert into model(id, name, version, description, sample_id, chip_size, epoch, learning_rate, batch_size, model, backbone) VALUES (#{id}, #{name}, #{version}, #{description}, #{sample.id}, #{chipSize}, #{epoch}, #{learningRate}, #{batchSize}, #{model}, #{backbone})
+    </insert>
+    <delete id="delete" parameterType="String">
+        delete from model WHERE id=#{id}
+    </delete>
+</mapper>

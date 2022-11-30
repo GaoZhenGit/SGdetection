@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `model` (
     `sample_id` varchar(50) NOT NULL,
     `chip_size` int(11) NOT NULL DEFAULT '300',
     `epoch` int(11) NOT NULL DEFAULT '50',
+    `learning_rate` decimal(10,10) NOT NULL DEFAULT '0.00001',
     `batch_size` int(11) NOT NULL DEFAULT '8',
     `model` varchar(50) NOT NULL DEFAULT 'fcn_resetnet50',
     `backbone` varchar(50) NOT NULL DEFAULT 'resnet50',
