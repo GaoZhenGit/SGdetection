@@ -54,8 +54,10 @@ public class DatasetController {
 
     @RequestMapping(value = "mission/all", method = RequestMethod.GET)
     @ResponseBody
-    public DatasetResponse<DatasetMission> getMissionsByProjectId(@RequestParam(value = "projectId",required = false) String pid) {
-        List<DatasetMission> datasetMissions = datasetService.getMissionsByProjectId(pid);
+    public DatasetResponse<DatasetMission> getMissionsByProjectId(
+            @RequestParam(value = "projectId",required = false) String pid,
+            @RequestParam(value = "type", required = false) String type) {
+        List<DatasetMission> datasetMissions = datasetService.getMissionsByProjectId(pid, type);
         DatasetResponse<DatasetMission> response = new DatasetResponse<>();
         response.list = datasetMissions;
         response.msg = "success";

@@ -13,7 +13,7 @@ public interface IDatasetService {
     void deleteProject(String id);
 
     DatasetMission addMission(DatasetMission mission) throws Exception;
-    List<DatasetMission> getMissionsByProjectId(String projectId);
+    List<DatasetMission> getMissionsByProjectId(String projectId, String type);
     void deleteMission(String id);
 
     DatasetSample getSampleById(String sampleId);

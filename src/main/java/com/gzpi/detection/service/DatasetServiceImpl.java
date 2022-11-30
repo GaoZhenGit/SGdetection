@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,12 +43,17 @@ public class DatasetServiceImpl implements IDatasetService {
     }
 
     @Override
-    public List<DatasetMission> getMissionsByProjectId(String projectId) {
+    public List<DatasetMission> getMissionsByProjectId(String projectId, String type) {
+        List<DatasetMission> missions;
         if (projectId == null || projectId.isEmpty()) {
-            return missionMapper.getAllMission();
+            missions = missionMapper.getAllMission();
         } else {
-            return missionMapper.getMissionByProjectId(projectId);
+            missions = missionMapper.getMissionByProjectId(projectId);
         }
+        if (type != null && !type.isEmpty()) {
+            missions = missions.stream().filter(mission -> mission.project.type == LabelType.valueOf(type)).collect(Collectors.toList());
+        }
+        return missions;
     }
 
     @Override
@@ -105,7 +112,7 @@ public class DatasetServiceImpl implements IDatasetService {
         DatasetSample sample = new DatasetSample();
         sample.id = request.id;
         sample.name = request.name;
-        sample.type = DatasetSample.Type.valueOf(request.type);
+        sample.type = LabelType.valueOf(request.type);
         sample.items = new ArrayList<>();
 
         for (String missionId : request.data) {
