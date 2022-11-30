@@ -4,6 +4,7 @@
     <resultMap id="baseMap" type="com.gzpi.detection.bean.DatasetSample">
         <id column="id" property="id"/>
         <result column="name" property="name" />
+        <result column="type" property="type" />
         <collection property="items" ofType="com.gzpi.detection.bean.DatasetItem">
             <id column="pid" property="id"/>
             <result column="image_name" property="imageName" />
@@ -13,13 +14,13 @@
         </collection>
     </resultMap>
     <select id="getSampleById" parameterType="String" resultMap="baseMap">
-        SELECT sample.id, sample.name, data_item.id as pid, image_name, image_2_name, label_name, sample_id FROM sample, data_item WHERE sample.id=data_item.sample_id and id=#{id}
+        SELECT sample.id, sample.name, sample.type, data_item.id as pid, image_name, image_2_name, label_name, sample_id FROM sample, data_item WHERE sample.id=data_item.sample_id and id=#{id}
     </select>
     <select id="getAllSamples" resultMap="baseMap">
-        SELECT sample.id, sample.name, data_item.id as pid, image_name, image_2_name, label_name, sample_id FROM sample, data_item WHERE sample.id=data_item.sample_id
+        SELECT sample.id, sample.name, sample.type, data_item.id as pid, image_name, image_2_name, label_name, sample_id FROM sample, data_item WHERE sample.id=data_item.sample_id
     </select>
     <insert id="save" parameterType="com.gzpi.detection.bean.DatasetSample">
-        insert into sample(id, name) VALUES (#{id}, #{name})
+        insert into sample(id, name, type) VALUES (#{id}, #{name}, #{type})
     </insert>
     <insert id="saveItem" parameterType="com.gzpi.detection.bean.DatasetItem">
         insert into data_item (id, image_name, image_2_name, label_name, sample_id) values
