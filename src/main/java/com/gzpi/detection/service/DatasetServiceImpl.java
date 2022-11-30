@@ -105,6 +105,7 @@ public class DatasetServiceImpl implements IDatasetService {
         DatasetSample sample = new DatasetSample();
         sample.id = request.id;
         sample.name = request.name;
+        sample.type = DatasetSample.Type.valueOf(request.type);
         sample.items = new ArrayList<>();
 
         for (String missionId : request.data) {
