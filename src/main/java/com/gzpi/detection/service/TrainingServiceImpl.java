@@ -23,10 +23,10 @@ public class TrainingServiceImpl implements ITrainingService{
     @Override
     public List<TrainingModel> getAllModels(String name, String version) {
         List<TrainingModel> models = modelMapper.getAllModels();
-        if (name != null) {
+        if (name != null && !name.isEmpty()) {
             models = models.stream().filter(model -> Objects.equals(model.name, name)).collect(Collectors.toList());
         }
-        if (version != null) {
+        if (version != null && !version.isEmpty()) {
             models = models.stream().filter(model -> Objects.equals(model.version, version)).collect(Collectors.toList());
         }
         return models;

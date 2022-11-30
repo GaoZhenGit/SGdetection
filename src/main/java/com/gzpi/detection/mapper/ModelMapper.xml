@@ -15,6 +15,7 @@
         <association property="sample" javaType="com.gzpi.detection.bean.DatasetSample">
             <id column="sid" property="id"/>
             <result column="sname" property="name" />
+            <result column="type" property="type" />
             <collection property="items" ofType="com.gzpi.detection.bean.DatasetItem">
                 <id column="item_id" property="id"/>
                 <result column="image_name" property="imageName" />
@@ -25,10 +26,10 @@
         </association>
     </resultMap>
     <select id="getModelById" parameterType="String" resultMap="baseMap">
-        SELECT model.id, model.name, `version`, `description`, model.sample_id as sampleId, `chip_size` as chipSize, `epoch`, learning_rate, `batch_size` as batchSize, `model`, `backbone`, sample.id as sid, sample.name as sname, data_item.id as item_id,data_item.image_name, data_item.image_2_name, data_item.label_name FROM model, sample, data_item WHERE model.sample_id=sample.id AND data_item.sample_id=sample.id AND model.id=#{id}
+        SELECT model.id, model.name, `version`, `description`, model.sample_id as sampleId, `chip_size` as chipSize, `epoch`, learning_rate, `batch_size` as batchSize, `model`, `backbone`, sample.id as sid, sample.name as sname, sample.type as type, data_item.id as item_id,data_item.image_name, data_item.image_2_name, data_item.label_name FROM model, sample, data_item WHERE model.sample_id=sample.id AND data_item.sample_id=sample.id AND model.id=#{id}
     </select>
     <select id="getAllModels" resultType="com.gzpi.detection.bean.TrainingModel" resultMap="baseMap">
-        SELECT model.id, model.name, `version`, `description`, model.sample_id as sampleId, `chip_size` as chipSize, `epoch`, learning_rate, `batch_size` as batchSize, `model`, `backbone`, sample.id as sid, sample.name as sname, data_item.id as item_id,data_item.image_name, data_item.image_2_name, data_item.label_name FROM model, sample, data_item WHERE model.sample_id=sample.id AND data_item.sample_id=sample.id
+        SELECT model.id, model.name, `version`, `description`, model.sample_id as sampleId, `chip_size` as chipSize, `epoch`, learning_rate, `batch_size` as batchSize, `model`, `backbone`, sample.id as sid, sample.name as sname, sample.type as type, data_item.id as item_id,data_item.image_name, data_item.image_2_name, data_item.label_name FROM model, sample, data_item WHERE model.sample_id=sample.id AND data_item.sample_id=sample.id
     </select>
     <insert id="save" parameterType="com.gzpi.detection.bean.TrainingModel">
         insert into model(id, name, version, description, sample_id, chip_size, epoch, learning_rate, batch_size, model, backbone) VALUES (#{id}, #{name}, #{version}, #{description}, #{sample.id}, #{chipSize}, #{epoch}, #{learningRate}, #{batchSize}, #{model}, #{backbone})
