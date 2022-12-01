@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -62,6 +63,7 @@ public class DatasetServiceImpl implements IDatasetService {
         if (existMission == null) {
             mission.labelName = "mi_" + mission.id + "_" + mission.imageName.replace(".tiff", ".geojson").replace(".tif", ".geojson");
             missionMapper.save(mission);
+            createEmptyFile(pathSelector.getUploadImageDir() + mission.labelName);
         } else {
             setMissionNull(existMission, mission);
             missionMapper.update(mission);
@@ -108,7 +110,7 @@ public class DatasetServiceImpl implements IDatasetService {
     }
 
     @Override
-    public void addSampleFromMissions(DatasetRequest<List<String>> request) {
+    public void addSampleFromMissions(DatasetRequest<List<String>> request) throws IOException {
         DatasetSample sample = new DatasetSample();
         sample.id = request.id;
         sample.name = request.name;
@@ -126,6 +128,7 @@ public class DatasetServiceImpl implements IDatasetService {
             if (item.labelName == null || item.labelName.isEmpty()) {
                 item.labelName = "mi_" + mission.id + "_" + mission.imageName.replace(".tiff", ".geojson").replace(".tif", ".geojson");
             }
+            createEmptyFile(pathSelector.getUploadImageDir() + item.labelName);
             sample.items.add(item);
         }
         sampleMapper.save(sample);
@@ -135,5 +138,12 @@ public class DatasetServiceImpl implements IDatasetService {
     @Override
     public void deleteSample(String id) {
         sampleMapper.delete(id);
+    }
+
+    private void createEmptyFile(String path) throws IOException {
+        File file = new File(path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
     }
 }

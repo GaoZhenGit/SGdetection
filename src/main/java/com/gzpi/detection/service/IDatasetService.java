@@ -5,6 +5,7 @@ import com.gzpi.detection.bean.DatasetProject;
 import com.gzpi.detection.bean.DatasetRequest;
 import com.gzpi.detection.bean.DatasetSample;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IDatasetService {
@@ -19,6 +20,6 @@ public interface IDatasetService {
     DatasetSample getSampleById(String sampleId);
     List<DatasetSample> getAllSamples();
     void saveSample(DatasetSample sample);
-    void addSampleFromMissions(DatasetRequest<List<String>> request);
+    void addSampleFromMissions(DatasetRequest<List<String>> request) throws IOException;
     void deleteSample(String id);
 }
