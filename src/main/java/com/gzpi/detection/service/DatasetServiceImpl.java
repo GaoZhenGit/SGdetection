@@ -143,7 +143,8 @@ public class DatasetServiceImpl implements IDatasetService {
     private void createEmptyFile(String path) throws IOException {
         File file = new File(path);
         if (!file.exists()) {
-            file.createNewFile();
+            boolean ret=file.createNewFile();
+            log.info("create empty file:" + path + " " + ret);
         }
     }
 }

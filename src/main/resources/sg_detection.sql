@@ -71,10 +71,10 @@ ALTER TABLE `data_item`
     ADD CONSTRAINT `data_item_ibfk_1` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `mission`
-    ADD CONSTRAINT `mission_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`);
+    ADD CONSTRAINT `mission_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `model`
-    ADD CONSTRAINT `model_ibfk_1` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`id`);
+    ADD CONSTRAINT `model_ibfk_1` FOREIGN KEY (`sample_id`) REFERENCES `sample` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
