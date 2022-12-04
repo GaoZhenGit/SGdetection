@@ -10,11 +10,11 @@ public class TrainingModel {
     public int epoch = 50;
     public double learningRate = 1e-5;
     public int batchSize = 8;
-    public Model model = Model.fcn_resetnet50;
+    public Model model = Model.fcn_resnet50;
     public Backbone backbone = Backbone.resnet50;
 
     public enum Model {
-        fcn_resetnet50,
+        fcn_resnet50,
         inception_v3,
         deeplabv3_resnet50
     }

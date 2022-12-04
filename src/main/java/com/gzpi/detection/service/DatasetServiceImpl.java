@@ -5,6 +5,7 @@ import com.gzpi.detection.mapper.DatasetMissionMapper;
 import com.gzpi.detection.mapper.DatasetProjectMapper;
 import com.gzpi.detection.mapper.DatasetSampleMapper;
 import com.gzpi.detection.operation.PathSelector;
+import com.gzpi.detection.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,6 +145,9 @@ public class DatasetServiceImpl implements IDatasetService {
         File file = new File(path);
         if (!file.exists()) {
             boolean ret=file.createNewFile();
+            String content = "{\"type\":\"FeatureCollection\",\"name\":\"fileName\",\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"urn:ogc:def:crs:OGC:1.3:CRS84\"}},\"features\":[]}";
+            content = content.replace("fileName", file.getName());
+            FileUtil.write(file, content);
             log.info("create empty file:" + path + " " + ret);
         }
     }

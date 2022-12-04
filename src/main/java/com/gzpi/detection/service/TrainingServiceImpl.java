@@ -13,17 +13,24 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
 @Slf4j
 @Service
-public class TrainingServiceImpl implements ITrainingService{
+public class TrainingServiceImpl implements ITrainingService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private PathSelector pathSelector;
     @Value("${train.config.python.path}")
     private String configPythonPath;
+    @Value("${common.train.command}")
+    private String trainCommand;
+
+    private final Executor mThreadPool = Executors.newCachedThreadPool();
+
     @Override
     public TrainingModel addModel(TrainingModel model) {
         modelMapper.save(model);
@@ -51,6 +58,11 @@ public class TrainingServiceImpl implements ITrainingService{
     public void startTraining(String modelId) throws Exception {
         TrainingModel model = modelMapper.getModelById(modelId);
         String workspacePath = pathSelector.getTrainingWorkspaceDir(modelId);
+        trainingConfig(model, workspacePath);
+        train(model, workspacePath);
+    }
+
+    private void trainingConfig(TrainingModel model, String workspacePath) throws Exception {
         String cmd = "python " + configPythonPath;
         cmd = cmd.replace("$learning_rate", String.valueOf(model.learningRate))
                 .replace("$id", model.id)
@@ -89,5 +101,12 @@ public class TrainingServiceImpl implements ITrainingService{
         if (code != 0) {
             throw new Exception("training config error" + configExec.getErrMsg());
         }
+    }
+
+    private void train(TrainingModel model, String workspacePath) throws Exception {
+        String cmd = trainCommand;
+        cmd = cmd.replace("$src", workspacePath + "/config.py");
+        CommandExecutor trainExec = new CommandExecutor(cmd, workspacePath);
+        mThreadPool.execute(trainExec);
     }
 }

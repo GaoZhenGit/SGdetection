@@ -29,8 +29,9 @@ def get_config(runner) -> SemanticSegmentationConfig:
     workspace = 'REPLACE_workspace'
 
     class_config = ClassConfig(
-        names=['target'],
+        names=['target','background'],
         colors=['red'],
+        null_class='background',
     )
 
     def make_scene(scene_id: str, image_uri: str, label_uri: str) -> SceneConfig:
@@ -64,7 +65,7 @@ def get_config(runner) -> SemanticSegmentationConfig:
         )
         return scene
 
-    train_set = [make_scene(i, img, label) for i, (img, label) in get_sense(workspace)]
+    train_set = [make_scene(str(i), img, label) for i, (img, label) in enumerate(get_sense(workspace))]
     test_set = get_sense_test(train_set)
     scene_dataset = DatasetConfig(
         class_config=class_config,
@@ -79,7 +80,7 @@ def get_config(runner) -> SemanticSegmentationConfig:
         model = SemanticSegmentationModelConfig(
             external_def=ExternalModuleConfig(
                 uri="/opt/src/code/input/SemanticSegmentation/vision-0.8.1",
-                entrypoint=REPLACE_model,
+                entrypoint='REPLACE_model',
                 force_reload=False,
             )
         )
