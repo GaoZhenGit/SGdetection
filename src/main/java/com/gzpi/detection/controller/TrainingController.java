@@ -50,4 +50,16 @@ public class TrainingController {
             return BaseResponse.fail(e.getMessage());
         }
     }
+
+    @RequestMapping(value = "model/startTraining/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse startTraining(@PathVariable("id") String modelId) {
+        try {
+            trainingService.startTraining(modelId);
+            return BaseResponse.success();
+        } catch (Exception e) {
+            log.error("startTraining fail", e);
+            return BaseResponse.fail(e.getMessage());
+        }
+    }
 }

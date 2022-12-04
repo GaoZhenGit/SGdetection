@@ -76,4 +76,13 @@ public class PathSelector {
         }
         return dir;
     }
+
+    public String getTrainingWorkspaceDir(String modelId) {
+        String dir = getRealDir() + "workspace" + File.separator + modelId;
+        File f = new File(dir);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        return dir;
+    }
 }

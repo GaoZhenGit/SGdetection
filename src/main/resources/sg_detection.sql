@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `data_item` (
     `image_2_name` varchar(200) DEFAULT NULL,
     `label_name` varchar(200) NOT NULL,
     `sample_id` varchar(50) NOT NULL,
+    PRIMARY KEY (`id`),
     KEY `data_item_ibfk_1` (`sample_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

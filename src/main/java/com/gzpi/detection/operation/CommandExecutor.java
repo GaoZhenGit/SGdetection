@@ -15,6 +15,7 @@ public class CommandExecutor implements Runnable {
     private String outputDir;
     private boolean hasFinished = false;
     private int resultCode = 0;
+    private String errMsg = "";
     public List<String> usingFiles;
     private final List<Runnable> mPostMission = new ArrayList<>();
 
@@ -43,6 +44,10 @@ public class CommandExecutor implements Runnable {
         return resultCode;
     }
 
+    public String getErrMsg() {
+        return errMsg;
+    }
+
     public void executeCommand(String[] command) {
         Runtime runtime = Runtime.getRuntime();
         try {
@@ -50,7 +55,7 @@ public class CommandExecutor implements Runnable {
             // 标准输入流（必须写在 waitFor 之前）
             String inStr = consumeInputStream(process.getInputStream(), false);
             // 标准错误流（必须写在 waitFor 之前）
-            String errStr = consumeInputStream(process.getErrorStream(), true); //若有错误信息则输出
+            errMsg = consumeInputStream(process.getErrorStream(), true); //若有错误信息则输出
             int proc = process.waitFor();
             if (proc == 0) {
                 logger.info("==========execute success==========");

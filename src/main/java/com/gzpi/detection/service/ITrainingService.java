@@ -8,4 +8,5 @@ public interface ITrainingService {
     TrainingModel addModel(TrainingModel model);
     List<TrainingModel> getAllModels(String name, String version);
     void deleteModel(String id);
+    void startTraining(String modelId) throws Exception;
 }
