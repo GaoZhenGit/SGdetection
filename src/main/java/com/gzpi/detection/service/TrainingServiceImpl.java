@@ -82,6 +82,7 @@ public class TrainingServiceImpl implements ITrainingService {
     public void deleteModel(String id) {
         modelMapper.delete(id);
         FileUtil.deleteDirectoryLegacyIO(new File(pathSelector.getTrainingWorkspaceDir(id)));
+        FileUtil.deleteDirectoryLegacyIO(new File(pathSelector.getPublishedModelDir(id)));
     }
 
     @Override
@@ -99,7 +100,6 @@ public class TrainingServiceImpl implements ITrainingService {
             f.mkdirs();
         }
         trainingConfig(model, workspacePath);
-        train(model, workspacePath);
         model.status = TrainingModel.ModelStatus.training;
         modelMap.put(modelId, model);
     }
@@ -138,11 +138,14 @@ public class TrainingServiceImpl implements ITrainingService {
         }
         log.info("training config command:" + cmd);
         CommandExecutor configExec = new CommandExecutor(cmd, workspacePath);
-        configExec.run();
-        int code = configExec.getResultCode();
-        if (code != 0) {
-            throw new Exception("training config error" + configExec.getErrMsg());
-        }
+        configExec.addPostMission(() -> {
+            try {
+                train(model, workspacePath);
+            } catch (Exception e) {
+                log.error("model config error", e);
+            }
+        });
+        mThreadPool.execute(configExec);
     }
 
     private void train(TrainingModel model, String workspacePath) throws Exception {
@@ -155,6 +158,7 @@ public class TrainingServiceImpl implements ITrainingService {
         mThreadPool.execute(trainExec);
     }
 
+    @Override
     public void publishModel(String modelId) throws Exception {
         TrainingModel model = modelMapper.getModelById(modelId);
         if (model == null) {

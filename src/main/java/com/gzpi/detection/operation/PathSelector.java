@@ -93,4 +93,8 @@ public class PathSelector {
     public String getPublishedModelDir(String modelId) {
         return getRealDir() + "/model/custom_" + modelId + "_bundle.zip";
     }
+
+    public String getModelRecordPath(String modelId) {
+        return getTrainingWorkspaceDir(modelId) + "output/train/log.csv";
+    }
 }
