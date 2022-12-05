@@ -78,11 +78,19 @@ public class PathSelector {
     }
 
     public String getTrainingWorkspaceDir(String modelId) {
-        String dir = getRealDir() + "workspace" + File.separator + modelId;
+        String dir = getRealDir() + "workspace" + File.separator + modelId + File.separator;
         File f = new File(dir);
         if (!f.exists()) {
             f.mkdirs();
         }
         return dir;
+    }
+
+    public String getTrainedBundle(String modelId) {
+        return getTrainingWorkspaceDir(modelId) + "output/bundle/model-bundle.zip";
+    }
+
+    public String getPublishedModelDir(String modelId) {
+        return getRealDir() + "/model/custom_" + modelId + "_bundle.zip";
     }
 }

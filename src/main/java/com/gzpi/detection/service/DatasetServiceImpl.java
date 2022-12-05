@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -36,7 +37,9 @@ public class DatasetServiceImpl implements IDatasetService {
 
     @Override
     public List<DatasetProject> getAllProject() {
-        return projectMapper.getAllProjects();
+        List<DatasetProject> projects = projectMapper.getAllProjects();
+        projects.sort(Comparator.comparing(o -> o.name));
+        return projects;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class DatasetServiceImpl implements IDatasetService {
         if (type != null && !type.isEmpty()) {
             missions = missions.stream().filter(mission -> mission.project.type == LabelType.valueOf(type)).collect(Collectors.toList());
         }
+        missions.sort(Comparator.comparing(o -> o.name));
         return missions;
     }
 
@@ -72,6 +76,7 @@ public class DatasetServiceImpl implements IDatasetService {
         mission = missionMapper.getMissionById(mission.id);
         return mission;
     }
+
     private void setMissionNull(DatasetMission src, DatasetMission des) {
         if (des.name == null) {
             des.name = src.name;
@@ -99,7 +104,9 @@ public class DatasetServiceImpl implements IDatasetService {
 
     @Override
     public List<DatasetSample> getAllSamples() {
-        return sampleMapper.getAllSamples();
+        List<DatasetSample> samples = sampleMapper.getAllSamples();
+        samples.sort(Comparator.comparing(o -> o.name));
+        return samples;
     }
 
     public void saveSample(DatasetSample datasetSample) {
@@ -144,7 +151,7 @@ public class DatasetServiceImpl implements IDatasetService {
     private void createEmptyFile(String path) throws IOException {
         File file = new File(path);
         if (!file.exists()) {
-            boolean ret=file.createNewFile();
+            boolean ret = file.createNewFile();
             String content = "{\"type\":\"FeatureCollection\",\"name\":\"fileName\",\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"urn:ogc:def:crs:OGC:1.3:CRS84\"}},\"features\":[]}";
             content = content.replace("fileName", file.getName());
             FileUtil.write(file, content);

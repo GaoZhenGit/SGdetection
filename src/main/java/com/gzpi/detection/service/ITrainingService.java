@@ -6,7 +6,8 @@ import java.util.List;
 
 public interface ITrainingService {
     TrainingModel addModel(TrainingModel model);
-    List<TrainingModel> getAllModels(String name, String version);
+    List<TrainingModel> getAllModels(String name, String version, String status);
     void deleteModel(String id);
     void startTraining(String modelId) throws Exception;
+    void publishModel(String modelId) throws Exception;
 }

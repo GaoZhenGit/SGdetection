@@ -12,6 +12,7 @@ public class TrainingModel {
     public int batchSize = 8;
     public Model model = Model.fcn_resnet50;
     public Backbone backbone = Backbone.resnet50;
+    public ModelStatus status = ModelStatus.idle;
 
     public enum Model {
         fcn_resnet50,
@@ -22,5 +23,12 @@ public class TrainingModel {
     public enum Backbone {
         resnet50,
         resnet101
+    }
+
+    public enum ModelStatus {
+        idle,
+        training,
+        finished,
+        published
     }
 }

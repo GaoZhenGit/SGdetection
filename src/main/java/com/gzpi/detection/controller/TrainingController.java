@@ -32,9 +32,12 @@ public class TrainingController {
 
     @RequestMapping(value = "model/all", method = RequestMethod.GET)
     @ResponseBody
-    public DatasetResponse<TrainingModel> getAllSamples(@RequestParam(required = false) String name, @RequestParam(required = false) String version) {
+    public DatasetResponse<TrainingModel> getAllSamples(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String version,
+            @RequestParam(required = false) String status) {
         DatasetResponse<TrainingModel> response = new DatasetResponse<>();
-        response.list = trainingService.getAllModels(name, version);
+        response.list = trainingService.getAllModels(name, version, status);
         response.msg = "success";
         return response;
     }
@@ -56,6 +59,18 @@ public class TrainingController {
     public BaseResponse startTraining(@PathVariable("id") String modelId) {
         try {
             trainingService.startTraining(modelId);
+            return BaseResponse.success();
+        } catch (Exception e) {
+            log.error("startTraining fail", e);
+            return BaseResponse.fail(e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "model/publish/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse publish(@PathVariable("id") String modelId) {
+        try {
+            trainingService.publishModel(modelId);
             return BaseResponse.success();
         } catch (Exception e) {
             log.error("startTraining fail", e);

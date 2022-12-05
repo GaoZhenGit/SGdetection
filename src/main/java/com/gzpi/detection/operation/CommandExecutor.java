@@ -1,6 +1,7 @@
 package com.gzpi.detection.operation;
 
 
+import com.gzpi.detection.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class CommandExecutor implements Runnable {
         } finally {
             if (resultCode != 0 && outputDir != null) {
                 File dir = new File(outputDir);
-                deleteDirectoryLegacyIO(dir);
+                FileUtil.deleteDirectoryLegacyIO(dir);
             }
             hasFinished = true;
         }
@@ -90,16 +91,5 @@ public class CommandExecutor implements Runnable {
             sb.append(s);
         }
         return sb.toString();
-    }
-
-    private void deleteDirectoryLegacyIO(File file) {
-
-        File[] list = file.listFiles();  //无法做到list多层文件夹数据
-        if (list != null) {
-            for (File temp : list) {     //先去递归删除子文件夹及子文件
-                deleteDirectoryLegacyIO(temp);   //注意这里是递归调用
-            }
-        }
-        file.delete();
     }
 }
