@@ -84,14 +84,30 @@ public class FileController {
 
     @RequestMapping(value = "images", method = RequestMethod.GET)
     @ResponseBody
-    public FileListResponse images() {
+    public FileListResponse images(@RequestParam(required = false) String type) {
         FileListResponse response = new FileListResponse();
         File workspace = new File(pathSelector.getUploadImageDir());
+        String prefix = "";
+        if (type != null && !type.isEmpty()) {
+            switch (type) {
+                case "predict":
+                    prefix = "predict_";
+                    break;
+                case "mission":
+                    prefix = "mi_";
+                    break;
+                default:
+                    prefix = "";
+                    break;
+            }
+        }
+        String finalPrefix = prefix;
         String[] files = workspace.list((dir, name) -> {
             File f = new File(dir + File.separator + name);
             boolean isTif = name.endsWith(".tif") || name.endsWith(".tiff");
             boolean isGeojson = name.endsWith(".geojson") || name.endsWith(".json");
-            return !f.isDirectory() && (isTif || isGeojson);
+            boolean pre = name.startsWith(finalPrefix);
+            return !f.isDirectory() && (isTif || isGeojson) && pre;
         });
         if (files != null) {
             response.files = Arrays.asList(files);

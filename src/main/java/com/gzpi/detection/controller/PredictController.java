@@ -6,6 +6,7 @@ import com.gzpi.detection.bean.PredictResponse;
 import com.gzpi.detection.mission.CopyGeoJsonMission;
 import com.gzpi.detection.operation.CommandExecutor;
 import com.gzpi.detection.operation.PathSelector;
+import com.gzpi.detection.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,19 @@ public class PredictController {
         if (e != null && !e.hasFinished()) {
             return BaseResponse.fail(predictRequest.id + " task has executed!");
         }
+        String bundlePath = null;
+        if (predictRequest.modelId != null && !predictRequest.modelId.isEmpty()) {
+            bundlePath = pathSelector.getPublishedModelDir(predictRequest.modelId);
+            if (!FileUtil.isFileExist(bundlePath)) {
+                return BaseResponse.fail("model " + predictRequest.modelId + " not published");
+            }
+            logger.info("use custom model:" + bundlePath);
+        } else {
+            bundlePath = pathSelector.getModelBundleDir() + changeBundleName;
+            logger.info("use default model:" + bundlePath);
+        }
         String cmd = changePredictCommand
-                .replace("$model", pathSelector.getModelBundleDir() + changeBundleName)
+                .replace("$model", bundlePath)
                 .replace("$img1", pathSelector.getPredictImagePath(predictRequest.img1))
                 .replace("$img2", pathSelector.getPredictImagePath(predictRequest.img2))
                 .replace("$output", pathSelector.getPredictTaskOutputPath(predictRequest.id));
@@ -83,8 +95,19 @@ public class PredictController {
         if (e != null && !e.hasFinished()) {
             return BaseResponse.fail(predictRequest.id + " task has executed!");
         }
+        String bundlePath = null;
+        if (predictRequest.modelId != null && !predictRequest.modelId.isEmpty()) {
+            bundlePath = pathSelector.getPublishedModelDir(predictRequest.modelId);
+            if (!FileUtil.isFileExist(bundlePath)) {
+                return BaseResponse.fail("model " + predictRequest.modelId + " not published");
+            }
+            logger.info("use custom model:" + bundlePath);
+        } else {
+            bundlePath = pathSelector.getModelBundleDir() + buildingBundleName;
+            logger.info("use default model:" + bundlePath);
+        }
         String cmd = buildingPredictCommand
-                .replace("$model", pathSelector.getModelBundleDir() + buildingBundleName)
+                .replace("$model", bundlePath)
                 .replace("$img1", pathSelector.getPredictImagePath(predictRequest.img1))
                 .replace("$output", pathSelector.getPredictTaskOutputPath(predictRequest.id));
         e = new CommandExecutor(cmd, pathSelector.getPredictTaskOutputPath(predictRequest.id));

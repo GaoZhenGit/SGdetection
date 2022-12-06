@@ -28,7 +28,7 @@ public class CopyGeoJsonMission implements Runnable{
         if (predictRequest.output == null || predictRequest.output.isEmpty()) {
             predictRequest.output = predictRequest.id + ".geojson";
         }
-        String output = pathSelector.getUploadImageDir() + "result-" + predictRequest.output.replace(".tif", ".geojson");
+        String output = pathSelector.getUploadImageDir() + "predict_" + predictRequest.output.replace(".tif", ".geojson");
         File des = new File(output);
         try {
             FileSystemUtils.copyRecursively(src, des);
